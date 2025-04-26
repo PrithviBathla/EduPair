@@ -16,7 +16,7 @@ EduPair is a peer-to-peer skill swap learning network where students can teach w
 
 ## 🚀 Live Demo
 
-Check out the live demo: [EduPair Platform](https://your-replit-url-here.repl.co)
+Check out the live demo: Coming Soon
 
 ## 🔧 Technology Stack
 
