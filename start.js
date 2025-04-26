@@ -1,31 +1,26 @@
+// Simple start script for Replit
 import { spawn } from 'child_process';
-import { exec } from 'child_process';
 
-// Set environment variables
+console.log('🚀 Starting EduPair application...');
+
+// Set necessary environment variables
 process.env.SESSION_SECRET = 'edupair_secret_key';
 process.env.NODE_ENV = 'development';
 
-console.log('Setting up the database...');
-// Run database migration
-exec('npm run db:push', (error, stdout, stderr) => {
-  if (error) {
-    console.error(`Database migration error: ${error.message}`);
-    return;
-  }
-  if (stderr) {
-    console.error(`Database migration stderr: ${stderr}`);
-  }
-  console.log(`${stdout}`);
-  console.log('Database setup complete.');
-  
-  console.log('Starting the EduPair server...');
-  // Start the server
-  const server = spawn('npx', ['tsx', 'server/index.ts'], {
-    stdio: 'inherit',
-    env: process.env
-  });
+// Start the application using npm run dev
+const server = spawn('npm', ['run', 'dev'], {
+  stdio: 'inherit',
+  env: process.env
+});
 
-  server.on('close', (code) => {
-    console.log(`Server process exited with code ${code}`);
-  });
+// Handle server process events
+server.on('error', (err) => {
+  console.error('❌ Failed to start server:', err);
+});
+
+// Keep the process running
+process.on('SIGINT', () => {
+  console.log('👋 Shutting down EduPair application...');
+  server.kill('SIGINT');
+  process.exit(0);
 });
