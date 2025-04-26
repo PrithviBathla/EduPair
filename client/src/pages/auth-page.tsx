@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "wouter";
+import { useLocation } from "wouter";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -42,15 +42,15 @@ type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export default function AuthPage() {
   const [activeTab, setActiveTab] = useState("login");
-  const [, navigate] = useLocation();
+  const [, setLocation] = useLocation();
   const { user, isLoading } = useAuth();
   
   // Redirect to home if already logged in
   useEffect(() => {
     if (user && !isLoading) {
-      navigate("/");
+      setLocation("/");
     }
-  }, [user, isLoading, navigate]);
+  }, [user, isLoading, setLocation]);
   
   return (
     <div className="min-h-screen flex">
