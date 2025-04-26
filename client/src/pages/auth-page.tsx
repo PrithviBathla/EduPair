@@ -1,11 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "wouter";
+import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Redirect } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
-import { insertUserSchema } from "@shared/schema";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -16,98 +23,124 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2 } from "lucide-react";
+import { BookOpen } from "lucide-react";
 
-// Extended schema with validation
+// Form schemas with validation
 const loginSchema = z.object({
-  username: z.string().min(1, "Username is required"),
-  password: z.string().min(1, "Password is required"),
+  username: z.string().min(3, "Username must be at least 3 characters"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
-const registerSchema = insertUserSchema.extend({
-  password: z.string().min(8, "Password must be at least 8 characters"),
-  email: z.string().email("Invalid email format"),
+const registerSchema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
+  email: z.string().email("Please enter a valid email"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export default function AuthPage() {
-  const [activeTab, setActiveTab] = useState<string>("login");
-  const { user, loginMutation, registerMutation } = useAuth();
-
-  // Redirect if already logged in
-  if (user) {
-    return <Redirect to="/" />;
-  }
-
+  const [activeTab, setActiveTab] = useState("login");
+  const [, navigate] = useLocation();
+  const { user, isLoading } = useAuth();
+  
+  // Redirect to home if already logged in
+  useEffect(() => {
+    if (user && !isLoading) {
+      navigate("/");
+    }
+  }, [user, isLoading, navigate]);
+  
   return (
-    <div className="flex min-h-screen">
-      {/* Left column - Form */}
-      <div className="flex flex-col items-center justify-center w-full md:w-1/2 px-4 py-12 bg-background">
-        <div className="w-full max-w-md space-y-8">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold tracking-tight text-primary">EduPair</h1>
-            <p className="mt-2 text-muted-foreground">Sign in to your account or create a new one</p>
+    <div className="min-h-screen flex">
+      {/* Left side - Form */}
+      <div className="flex flex-1 items-center justify-center px-4 py-12">
+        <div className="w-full max-w-md">
+          <div className="flex items-center gap-2 mb-8">
+            <BookOpen className="h-6 w-6" />
+            <h1 className="text-2xl font-bold">EduPair</h1>
           </div>
-
+          
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="login">Login</TabsTrigger>
               <TabsTrigger value="register">Register</TabsTrigger>
             </TabsList>
-            
-            <TabsContent value="login" className="mt-6">
-              <LoginForm />
+            <TabsContent value="login">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Welcome back</CardTitle>
+                  <CardDescription>
+                    Login to your account to continue learning and teaching
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <LoginForm />
+                </CardContent>
+                <CardFooter className="flex justify-center">
+                  <Button 
+                    variant="link" 
+                    onClick={() => setActiveTab("register")}
+                  >
+                    Don't have an account? Register
+                  </Button>
+                </CardFooter>
+              </Card>
             </TabsContent>
-            
-            <TabsContent value="register" className="mt-6">
-              <RegisterForm />
+            <TabsContent value="register">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Create an account</CardTitle>
+                  <CardDescription>
+                    Join EduPair to start teaching and learning new skills
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <RegisterForm />
+                </CardContent>
+                <CardFooter className="flex justify-center">
+                  <Button 
+                    variant="link" 
+                    onClick={() => setActiveTab("login")}
+                  >
+                    Already have an account? Login
+                  </Button>
+                </CardFooter>
+              </Card>
             </TabsContent>
           </Tabs>
         </div>
       </div>
-
-      {/* Right column - Hero */}
-      <div className="hidden md:flex md:w-1/2 bg-primary flex-col items-center justify-center text-primary-foreground p-12">
-        <div className="max-w-md space-y-6">
-          <h2 className="text-3xl font-bold">Skill Swap Learning Network</h2>
-          <p className="text-xl">
-            A peer-to-peer learning network where students teach what they know and learn what they don't.
+      
+      {/* Right side - Hero */}
+      <div className="hidden md:flex md:flex-1 bg-primary/10 items-center justify-center p-12">
+        <div className="max-w-lg text-center">
+          <h2 className="text-3xl font-bold mb-6">
+            Teach what you know, learn what you don't
+          </h2>
+          <p className="text-lg mb-6">
+            EduPair connects people who want to share and acquire skills in a direct
+            peer-to-peer learning network.
           </p>
-          
           <div className="space-y-4">
-            <div className="flex items-start space-x-3">
-              <div className="bg-primary-foreground text-primary rounded-full h-8 w-8 flex items-center justify-center font-bold">1</div>
-              <div>
-                <h3 className="font-semibold">Create a Profile</h3>
-                <p>Showcase your skills and areas you'd like to learn.</p>
+            <div className="flex items-center gap-2">
+              <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+                1
               </div>
+              <p className="text-left">Create your profile and add skills you can teach</p>
             </div>
-            
-            <div className="flex items-start space-x-3">
-              <div className="bg-primary-foreground text-primary rounded-full h-8 w-8 flex items-center justify-center font-bold">2</div>
-              <div>
-                <h3 className="font-semibold">Offer Sessions</h3>
-                <p>Teach something you are good at to other learners.</p>
+            <div className="flex items-center gap-2">
+              <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+                2
               </div>
+              <p className="text-left">Earn credits by teaching others what you know</p>
             </div>
-            
-            <div className="flex items-start space-x-3">
-              <div className="bg-primary-foreground text-primary rounded-full h-8 w-8 flex items-center justify-center font-bold">3</div>
-              <div>
-                <h3 className="font-semibold">Earn Credits</h3>
-                <p>Every teaching session earns you credits.</p>
+            <div className="flex items-center gap-2">
+              <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+                3
               </div>
-            </div>
-            
-            <div className="flex items-start space-x-3">
-              <div className="bg-primary-foreground text-primary rounded-full h-8 w-8 flex items-center justify-center font-bold">4</div>
-              <div>
-                <h3 className="font-semibold">Redeem Credits</h3>
-                <p>Use your credits to learn from others.</p>
-              </div>
+              <p className="text-left">Use your credits to learn new skills from others</p>
             </div>
           </div>
         </div>
@@ -126,14 +159,14 @@ function LoginForm() {
       password: "",
     },
   });
-
+  
   const onSubmit = (data: LoginFormValues) => {
     loginMutation.mutate(data);
   };
-
+  
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <FormField
           control={form.control}
           name="username"
@@ -155,7 +188,11 @@ function LoginForm() {
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="Enter your password" {...field} />
+                <Input 
+                  type="password" 
+                  placeholder="Enter your password" 
+                  {...field} 
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -167,14 +204,7 @@ function LoginForm() {
           className="w-full" 
           disabled={loginMutation.isPending}
         >
-          {loginMutation.isPending ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Logging in...
-            </>
-          ) : (
-            "Login"
-          )}
+          {loginMutation.isPending ? "Logging in..." : "Login"}
         </Button>
       </form>
     </Form>
@@ -190,18 +220,16 @@ function RegisterForm() {
       username: "",
       email: "",
       password: "",
-      bio: "",
-      avatar: "",
-    } as RegisterFormValues,
+    },
   });
-
+  
   const onSubmit = (data: RegisterFormValues) => {
     registerMutation.mutate(data);
   };
-
+  
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <FormField
           control={form.control}
           name="username"
@@ -223,7 +251,11 @@ function RegisterForm() {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input type="email" placeholder="Enter your email" {...field} />
+                <Input 
+                  type="email" 
+                  placeholder="Enter your email" 
+                  {...field} 
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -237,35 +269,11 @@ function RegisterForm() {
             <FormItem>
               <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="Create a password" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        
-        <FormField
-          control={form.control}
-          name="bio"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Bio (Optional)</FormLabel>
-              <FormControl>
-                <Input placeholder="Tell us about yourself" {...field} value={field.value || ''} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        
-        <FormField
-          control={form.control}
-          name="avatar"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Avatar URL (Optional)</FormLabel>
-              <FormControl>
-                <Input placeholder="Link to your profile picture" {...field} value={field.value || ''} />
+                <Input 
+                  type="password" 
+                  placeholder="Create a password" 
+                  {...field} 
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -277,14 +285,7 @@ function RegisterForm() {
           className="w-full" 
           disabled={registerMutation.isPending}
         >
-          {registerMutation.isPending ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Creating account...
-            </>
-          ) : (
-            "Register"
-          )}
+          {registerMutation.isPending ? "Creating account..." : "Register"}
         </Button>
       </form>
     </Form>
