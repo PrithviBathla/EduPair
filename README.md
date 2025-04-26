@@ -1,40 +1,95 @@
 # EduPair - Peer-to-Peer Skill Swap Platform
 
-EduPair is a peer-to-peer skill swap learning network where students can teach what they know and learn what they don't through a credit-based system.
+EduPair is a peer-to-peer skill swap learning network where students can teach what they know and learn what they don't through a credit-based system. The platform operates on a credit economy: teach to earn credits, then spend those credits to learn from others.
 
-## Features
+![EduPair Platform](https://i.imgur.com/placeholder.png)
 
-- **User Authentication**: Register and login to access the platform
-- **Skills Management**: Add skills you can teach to others
-- **Session Management**: Create teaching sessions and earn credits
-- **Learning**: Spend credits to learn from others
-- **Reviews**: Rate your learning experience
+## 🌟 Features
 
-## Getting Started
+- **Credit-Based System**: Earn credits by teaching, spend them to learn
+- **Skill Marketplace**: Browse available skills and teachers
+- **User Authentication**: Secure registration and login system
+- **Skills Management**: Add and manage skills you can teach
+- **Session Scheduling**: Create and manage teaching sessions
+- **Booking System**: Book sessions with teachers using credits
+- **Reviews & Ratings**: Rate your learning experience
 
-To run the application:
+## 🚀 Live Demo
 
-```bash
-# Run with our prepared start script
-node start.js
-```
+Check out the live demo: [EduPair Platform](https://your-replit-url-here.repl.co)
 
-This will start both the backend API server and the React frontend.
+## 🔧 Technology Stack
 
-## How to Use EduPair
+- **Frontend**: React with Wouter for routing
+- **UI Components**: TailwindCSS with shadcn/ui component library
+- **Backend**: Express.js REST API
+- **Database**: PostgreSQL for data persistence
+- **ORM**: Drizzle ORM with Zod for type validation
+- **Authentication**: Passport.js with session-based auth
+- **State Management**: TanStack Query for data fetching/caching
 
-1. When the application starts, you'll see the authentication page at `/auth`
-2. **Register** for an account by creating a username and password
-3. Once logged in, you'll see your dashboard with skills and sessions
-4. **Add Skills** you're willing to teach by clicking "Add Skill"
-5. **Create Teaching Sessions** to earn credits by clicking "Create Session" 
-6. **Browse Sessions** created by other users to learn new skills
-7. **Book Sessions** to learn by spending your credits
-8. **Complete Sessions** and leave reviews for teachers
+## 📋 Getting Started
 
-## Technology Stack
+### Prerequisites
 
-- React frontend with TailwindCSS and shadcn components
-- Express backend with authentication
-- PostgreSQL database for data persistence
-- Drizzle ORM for type-safe database operations
+- Node.js (v18+)
+- PostgreSQL database
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/edupair.git
+   cd edupair
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Set up environment variables:
+   ```bash
+   # Create a .env file with the following variables
+   SESSION_SECRET=your_session_secret
+   DATABASE_URL=postgresql://username:password@host:port/database
+   ```
+
+4. Run the application:
+   ```bash
+   node start.js
+   ```
+
+## 🧠 How EduPair Works
+
+1. **Register** and create your profile
+2. **Add Skills** you're willing to teach to others
+3. **Create Teaching Sessions** to earn credits
+4. **Browse Available Sessions** from other teachers
+5. **Book Sessions** using your earned credits
+6. **Attend Sessions** and learn new skills
+7. **Leave Reviews** to help the community
+
+## 📚 Project Structure
+
+- `/client` - Frontend React application
+- `/server` - Backend Express API
+- `/shared` - Shared types and schemas
+- `/drizzle` - Database migrations and schema
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📝 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🙏 Acknowledgements
+
+- [React](https://reactjs.org/)
+- [TailwindCSS](https://tailwindcss.com/)
+- [shadcn/ui](https://ui.shadcn.com/)
+- [Express](https://expressjs.com/)
+- [Drizzle ORM](https://orm.drizzle.team/)
+- [PostgreSQL](https://www.postgresql.org/)
